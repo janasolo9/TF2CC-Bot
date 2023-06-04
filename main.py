@@ -1,12 +1,14 @@
 # this is the file that will run the bot
 # all settings should be edited in this file
 
+from dotenv import load_dotenv
 from logging import DEBUG, INFO
 from nextcord import Intents, Interaction
 from os import getenv, listdir
 
 from bot import TF2CCBot
 
+load_dotenv()
 
 version = "2.5.2"
 persistent_views_count = 2
