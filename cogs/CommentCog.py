@@ -1,22 +1,18 @@
-from nextcord import Interaction, Member, Role, User, slash_command, ApplicationError
-from nextcord.ext.commands import Bot, Cog, Context, group
-from nextcord.ext.commands import has_permissions as prf_has_perms
-from nextcord.ext.commands import guild_only as prf_guild_only
+from nextcord import Interaction, Member, Role, slash_command, ApplicationError
+from nextcord.ext.commands import Bot, Cog, Context
 from nextcord.ext.commands import check as prf_check
 from nextcord.ext.application_checks import check as app_check
 from nextcord.ext.application_checks import guild_only as app_guild_only
 from nextcord.ext.commands.errors import MissingAnyRole, CommandError, NoPrivateMessage
 from nextcord.ext.application_checks.errors import ApplicationMissingAnyRole
 from typing import Union
-from jbotcogs import JBOTLOG
-from static.BaseVar import get_user, group_command_help
 from .commenthelper import comment_add, comment_edit, comment_list, comment_remove, comment_role_add, comment_role_remove, valid_roles_list
 from .CommentDB import get_all_role_ids
 
 
 def check_user_roles(is_prefix_cmd: bool):
 	async def predicate(info_obj: Union[Context, Interaction]):
-		member = get_user(info_obj)
+		member = info_obj.author if isinstance(info_obj, Context) else info_obj.user
 		if not isinstance(member, Member):
 			raise NoPrivateMessage("This command can not be used in private messages.")
 		if member.guild_permissions.manage_guild:
@@ -37,99 +33,6 @@ class CommentCog(Cog, name = "User Comments"):
 	def __init__(self, bot: Bot):
 		self.bot = bot
 
-
-	@group(
-		name = "comment",
-		help = "Base `comment group` command. Users with the `manage_guild` permission can use these commands regardless of the roles whitelist.",
-		aliases = ["comm", "c", "comments"],
-		invoke_without_command = True
-	)
-	@prf_guild_only()
-	@check_user_roles(True)
-	async def pref_comment_group(self, ctx: Context):
-		embed = await group_command_help(self.pref_comment_group, ctx)
-		await ctx.send(embed = embed)
-
-
-	@pref_comment_group.group(
-		name = "roles",
-		help = "Base `comment roles` group command.",
-		invoke_without_command = True,
-	)
-	@prf_guild_only()
-	@prf_has_perms(manage_guild = True)
-	async def pref_comment_roles(self, ctx: Context):
-		embed = await group_command_help(self.pref_comment_roles, ctx)
-		await ctx.send(embed = embed)
-
-
-	@pref_comment_roles.command(
-		name = "add",
-		help = "Allow a role to use the comment commands.",
-		inherit_hooks = True
-	)
-	async def pref_comment_roles_add(self, ctx: Context, role: Role):
-		await comment_role_add(ctx, role)
-
-
-	@pref_comment_roles.command(
-		name = "remove",
-		help = "Remove a role's access to the comment commands.",
-		aliases = ["rem", "del", "delete"],
-		inherit_hooks = True
-	)
-	async def pref_comment_roles_remove(self, ctx: Context, role: Role):
-		await comment_role_remove(ctx, role)
-
-
-	@pref_comment_roles.command(
-		name = "list",
-		help = "Display a list of roles that may use the comment commands.",
-		aliases = ["show"],
-		inherit_hooks = True
-	)
-	async def pref_comment_roles_list(self, ctx: Context):
-		await valid_roles_list(ctx)
-
-
-	@pref_comment_group.command(
-		name = "list",
-		help = "Display a list of comments about the specified Discord user.",
-		aliases = ["show", "view"],
-		inherit_hooks = True
-	)
-	async def pref_comment_list(self, ctx: Context, user: User):
-		await comment_list(ctx, user)
-
-
-	@pref_comment_group.command(
-		name = "add",
-		help = "Add a comment about the specified Discord user.",
-		inherit_hooks = True
-	)
-	async def pref_comment_add(self, ctx: Context, user: User, *, comment: str):
-		await comment_add(ctx, user, comment)
-
-
-	@pref_comment_group.command(
-		name = "remove",
-		help = "Remove your comment about the specified Discord user.\nPeople with `administrator` permission may remove any comment.",
-		aliases = ["rem", "del", "delete"],
-		inherit_hooks = True
-	)
-	async def pref_comment_remove(self, ctx: Context, user: User, comment_id: int):
-		await comment_remove(ctx, user, comment_id)
-
-
-	@pref_comment_group.command(
-		name = "edit",
-		help = "Edit your comment about the specified Discord user.",
-		inherit_hooks = True
-	)
-	async def pref_comment_edit(self, ctx: Context, user: User, comment_id: int, *, new_comment: str):
-		await comment_edit(ctx, user, comment_id, new_comment)
-
-	# ~~~ SLASH COMMANDS ~~~
 
 	@slash_command(name = "comment", dm_permission = False)
 	@app_guild_only()

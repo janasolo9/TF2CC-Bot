@@ -2,7 +2,7 @@
 from nextcord import Embed, Interaction, Role, User
 from nextcord.ext.commands import Context
 from typing import Dict, List, Union
-from static.BaseVar import get_user, send_menu_pages
+from classes import send_menu_pages, get_user
 from .static import COMMENT_TABLE_VALUES
 from .CommentDB import add_role, delete_comment, edit_comment, get_all_comments, get_all_role_ids, new_comment, remove_role
 

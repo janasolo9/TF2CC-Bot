@@ -1,8 +1,15 @@
 from aiosqlite import Row, connect
-from nextcord import ButtonStyle, Color, Embed, Interaction
+from nextcord import ButtonStyle, Color, Embed, Interaction, Member, User
 from nextcord.ext.commands import Context
 from nextcord.ext.menus import ButtonMenuPages, ListPageSource, MenuPagesBase, MenuPaginationButton
 from typing import Optional, Union
+
+
+
+def get_user(info_obj: Union[Context, Interaction]) -> Union[Member, User]:
+	return info_obj.author if isinstance(info_obj, Context) else info_obj.user
+
+
 
 
 def get_tuple_vals(itr1: tuple, itr2: tuple) -> tuple[tuple]:
