@@ -1,7 +1,7 @@
 import aiohttp, traceback
 from datetime import datetime, timedelta, timezone
 from nextcord import ButtonStyle, ChannelType, Color, Embed, Interaction, Member, Message, PartialInteractionMessage, PartialMessageable, Role, User, TextChannel, VoiceChannel, HTTPException
-from nextcord.ext.commands import Bot, Context, CommandError
+from nextcord.ext.commands import Context, CommandError
 from nextcord.ui import Button, View, button
 from nextcord.utils import as_chunks, format_dt, utcnow
 from random import randint, shuffle
