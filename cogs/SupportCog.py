@@ -1,10 +1,11 @@
-import asyncio, re
-from nextcord import ButtonStyle, ChannelType, Embed, Interaction, Member, TextChannel, Thread, slash_command
+import re
+from nextcord import ButtonStyle, ChannelType, Color, Embed, Interaction, Member, TextChannel, Thread, slash_command
 from nextcord.ext.commands import Cog
 from nextcord.ext.application_checks import has_any_role
 from nextcord.ext.tasks import loop
+from nextcord.interactions import Interaction
 from nextcord.utils import utcnow
-from nextcord.ui import Button, View, button
+from nextcord.ui import Button, Modal, TextInput, View, button
 from bot import TF2CCBot
 from staticvars import TF2CC
 from .SupportDB import del_ticket2, get_all_tickets2, get_ticket_by_channel2, get_ticket2, new_ticket2
@@ -145,7 +146,7 @@ class PersistentSupport2(View):
 		await new_ticket2(owner = intr.user, channel = thread)
 
 		# add people to the thread
-		await thread.send(f"<@&{TF2CC.moderator_rid}> <@&{TF2CC.event_runner_rid}>", delete_after = 1)
+		await thread.send(f"<@&{TF2CC.moderator_rid}>", delete_after = 1)
 		msg = await thread.send(intr.user.mention, embed = TICKET_EMBED, view = PersistentCloseButton())
 		await msg.pin()
 
@@ -181,8 +182,6 @@ class SupportTicketCog(Cog, name = "Support Ticket"):
 		for ticket in tickets:
 			if ticket.channel_id not in open_thread_ids:
 				await del_ticket2(ticket.owner_id)
-
-
 
 
 	@slash_command(name = "ticket", guild_ids = [TF2CC.guild_id])
@@ -226,7 +225,7 @@ class SupportTicketCog(Cog, name = "Support Ticket"):
 
 
 	@ticket_slash.subcommand(name = "topic", description = "Change the topic of the Support Ticket.")
-	@has_any_role("Event Runner", "Moderators", "Admins", "Owners")
+	@has_any_role("Moderators", "Admins", "Owners")
 	async def ticket_topic(self, intr: Interaction, new_topic: str):
 		# this command can only be used by staff
 		await intr.response.defer(ephemeral = True)
@@ -269,6 +268,45 @@ class SupportTicketCog(Cog, name = "Support Ticket"):
 			await intr.send(f"Could not change the topic: `{str(err)}`", ephemeral = True)
 		except Exception as err:
 			await intr.send(f"Some error just occured.\n{type(err)} - {str(err)}", ephemeral = True)
+
+
+	@ticket_slash.subcommand(name = "message", description = "Sends a persistent button message.")
+	@has_any_role("Moderators", "Admins", "Owners")
+	async def ticket_message(self, intr: Interaction):
+		class EmbedModal(Modal):
+			def __init__(self):
+				super().__init__("Embed Maker")
+				self.embed_title = TextInput(
+					"Embed Title",
+					max_length = 128,
+					required = True,
+					default_value = "TF2CC Support",
+					placeholder = "Enter embed title here..."
+				)
+				self.add_item(self.embed_title)
+
+				self.embed_description = TextInput(
+					"Embed Description",
+					max_length = 4000,
+					required = True,
+					default_value = """Press the button below to create a new Support Ticket. You may use your ticket for any problems you have within the TF2CC Discord server.
+
+__Note: you may only have one ticket open at a time, so re-use the same ticket if you have multiple queries.__""",
+					placeholder = "Enter embed description here..."
+				)
+				self.add_item(self.embed_description)
+
+			async def callback(self, interaction: Interaction):
+				embed = Embed(
+					title = self.embed_title.value,
+					description = self.embed_description.value,
+					color = Color.from_rgb(225, 83, 76)
+				)
+				view = PersistentSupport2()
+				await interaction.send("Sending new message with persistent button.", ephemeral = True)
+				await interaction.channel.send(embed = embed, view = view)
+
+		await intr.response.send_modal(EmbedModal())
 
 
 def setup(bot: TF2CCBot):
