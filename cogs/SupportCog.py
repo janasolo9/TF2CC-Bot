@@ -1,5 +1,5 @@
 import re
-from nextcord import ButtonStyle, ChannelType, Color, Embed, Interaction, Member, TextChannel, Thread, slash_command
+from nextcord import ButtonStyle, ChannelType, Color, Embed, Interaction, Member, TextChannel, TextInputStyle, Thread, slash_command
 from nextcord.ext.commands import Cog
 from nextcord.ext.application_checks import has_any_role
 from nextcord.ext.tasks import loop
@@ -287,6 +287,7 @@ class SupportTicketCog(Cog, name = "Support Ticket"):
 
 				self.embed_description = TextInput(
 					"Embed Description",
+					style = TextInputStyle.paragraph,
 					max_length = 4000,
 					required = True,
 					default_value = """Press the button below to create a new Support Ticket. You may use your ticket for any problems you have within the TF2CC Discord server.
