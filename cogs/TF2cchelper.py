@@ -502,8 +502,7 @@ async def setlevel(info: Union[Context, Interaction], member: Member, level_role
 	# if not member.get_role(level_role.id):
 	# 	await member.add_roles(level_role, reason = "Changing level role via command")
 	# removed at least one level role, so update member roles
-	if roles_to_remove:
-		await member.edit(roles = new_roles, reason = "Changing level role via command")
+	await member.edit(roles = new_roles, reason = "Changing level role via command")
 
 	embed = Embed(description = f"Set {member.mention} to {level_role.mention}.")
 	await info.send(embed = embed)
