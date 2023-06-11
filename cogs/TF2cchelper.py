@@ -403,10 +403,10 @@ async def runnerinfo(info: Union[Context, Interaction], member: Member):
 **Became Pug Runner** - {format_dt(runner_info.became_runner_datetime) if runner_info.became_runner else "Unknown"}
 **Currently Pug Runner** - {member.get_role(TF2CC.pug_runner_rid) is not None}
 
-**# of Newbie Pugs Ran** - `{runner_info.npugs}`
+**\# of Newbie Pugs Ran** - `{runner_info.npugs}`
 **Last Ran Newbie Pugs** - {format_dt(runner_info.npugs_datetime) if runner_info.npugs_last_ran else "Never"}
 
-**# of Regular Pugs Ran** - `{runner_info.rpugs}`
+**\# of Regular Pugs Ran** - `{runner_info.rpugs}`
 **Last Ran Regular Pugs** - {format_dt(runner_info.rpugs_datetime) if runner_info.rpugs_last_ran else "Never"}
 """,
 		timestamp = utcnow()
